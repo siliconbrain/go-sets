@@ -18,8 +18,9 @@ type Countable[T any] interface {
 	AsSeq() seqs.Seq[T]
 }
 
-// Extendable defines something that can be made to include new elements.
-type Extendable[T any] interface {
+// Modifiable defines how a set can be modified.
+type Modifiable[T any] interface {
+	Exclude(...T)
 	Include(...T)
 }
 
