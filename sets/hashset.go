@@ -30,6 +30,24 @@ func (s HashSet[T]) Contains(v T) (res bool) {
 	return
 }
 
+func (s *HashSet[T]) Exclude(vs ...T) {
+	if *s == nil {
+		return
+	}
+	for _, v := range vs {
+		delete(*s, v)
+	}
+}
+
+func (s *HashSet[T]) ExcludeSeq(seq seqs.Seq[T]) {
+	if *s == nil {
+		return
+	}
+	seqs.ForEach(seq, func(v T) {
+		delete(*s, v)
+	})
+}
+
 func (s *HashSet[T]) Include(vs ...T) {
 	if *s == nil {
 		*s = make(HashSet[T])
