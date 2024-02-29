@@ -47,7 +47,7 @@ func CardinalityOf[T any](s CountableSetOf[T]) int {
 	if c, ok := QuickCardinalityOf(s); ok {
 		return c
 	}
-	return seqs.Reduce(s.AsSeq(), 0, func(c int, _ T) int { return c + 1 })
+	return seqs.Count(s.AsSeq())
 }
 
 // ContainsAnyOf returns true if s contains any of the specified values
