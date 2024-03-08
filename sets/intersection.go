@@ -38,7 +38,7 @@ type countableIntersectionSet[T any] struct {
 	intersectionSet[CountableSetOf[T], T]
 }
 
-func (s countableIntersectionSet[T]) AsSeq() seqs.Seq[T] {
+func (s countableIntersectionSet[T]) ForEachUntil(fn func(T) bool) {
 	smaller, larger := s.SetA, s.SetB
 
 	cardS, hasCardS := QuickCardinalityOf(smaller)
@@ -48,5 +48,5 @@ func (s countableIntersectionSet[T]) AsSeq() seqs.Seq[T] {
 		smaller, larger = larger, smaller
 	}
 
-	return seqs.Filter(smaller.AsSeq(), larger.Contains)
+	seqs.Filter(smaller, larger.Contains).ForEachUntil(fn)
 }

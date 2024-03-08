@@ -55,7 +55,6 @@ func (s *HashSet[T]) IncludeSeq(seq seqs.Seq[T]) {
 }
 
 var _ interface {
-	SetOf[any]
-	Countable[any]
+	CountableSetOf[any]
 	Modifiable[any]
 } = (*HashSet[any])(nil)

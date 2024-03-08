@@ -50,6 +50,6 @@ type countableRelativeComplementSet[T any] struct {
 	relativeComplementSet[CountableSetOf[T], T]
 }
 
-func (s countableRelativeComplementSet[T]) AsSeq() seqs.Seq[T] {
-	return seqs.Filter(s.SetB.AsSeq(), ComplementOf(s.SetA).Contains)
+func (s countableRelativeComplementSet[T]) ForEachUntil(fn func(T) bool) {
+	seqs.Filter(s.SetB, ComplementOf(s.SetA).Contains).ForEachUntil(fn)
 }

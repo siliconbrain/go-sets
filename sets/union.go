@@ -38,6 +38,6 @@ type countableUnionSet[T any] struct {
 	unionSet[CountableSetOf[T], T]
 }
 
-func (s countableUnionSet[T]) AsSeq() seqs.Seq[T] {
-	return seqs.Concat(s.SetA.AsSeq(), seqs.Filter(s.SetB.AsSeq(), ComplementOf(s.SetA).Contains))
+func (s countableUnionSet[T]) ForEachUntil(fn func(T) bool) {
+	seqs.Concat(s.SetA, seqs.Filter(s.SetB, ComplementOf(s.SetA).Contains)).ForEachUntil(fn)
 }

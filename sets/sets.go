@@ -10,12 +10,7 @@ type SetOf[T any] interface {
 // CountableSetOf defines the interface of a countable set of T.
 type CountableSetOf[T any] interface {
 	SetOf[T]
-	Countable[T]
-}
-
-// Countable defines something whose elements can be listed, albeit not necessarily finite.
-type Countable[T any] interface {
-	AsSeq() seqs.Seq[T]
+	seqs.Seq[T]
 }
 
 // Modifiable defines how a set can be modified.
@@ -35,9 +30,9 @@ func AreEqual[SetA, SetB CountableSetOf[T], T any](setA SetA, setB SetB) bool {
 	cardA, hasCardA := QuickCardinalityOf(setA)
 	cardB, hasCardB := QuickCardinalityOf(setB)
 	if hasCardA && hasCardB {
-		return cardA == cardB && seqs.All(setA.AsSeq(), setB.Contains)
+		return cardA == cardB && seqs.All(setA, setB.Contains)
 	}
-	return seqs.All(setA.AsSeq(), setB.Contains) && seqs.All(setB.AsSeq(), setA.Contains)
+	return seqs.All(setA, setB.Contains) && seqs.All(setB, setA.Contains)
 }
 
 // CardinalityOf returns the cardinality of the set.
@@ -47,7 +42,7 @@ func CardinalityOf[T any](s CountableSetOf[T]) int {
 	if c, ok := QuickCardinalityOf(s); ok {
 		return c
 	}
-	return seqs.Count(s.AsSeq())
+	return seqs.Count(s)
 }
 
 // ContainsAnyOf returns true if s contains any of the specified values
@@ -65,15 +60,8 @@ func QuickCardinalityOf[T any](s CountableSetOf[T]) (int, bool) {
 	if s, ok := s.(interface{ Cardinality() int }); ok {
 		return s.Cardinality(), true
 	}
-	if lener, ok := s.AsSeq().(seqs.Lener); ok {
+	if lener, ok := s.(seqs.Lener); ok {
 		return lener.Len(), true
 	}
 	return 0, false
-}
-
-// ToSlice returns the elements of the specified set as a slice.
-//
-// The order of elements is undefined.
-func ToSlice[T any](s CountableSetOf[T]) []T {
-	return seqs.ToSlice(s.AsSeq())
 }
