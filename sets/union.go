@@ -39,6 +39,5 @@ type countableUnionSet[T any] struct {
 }
 
 func (s countableUnionSet[T]) AsSeq() seqs.Seq[T] {
-	notInSetA := func(v T) bool { return !s.SetA.Contains(v) }
-	return seqs.Concat(s.SetA.AsSeq(), seqs.Filter(s.SetB.AsSeq(), notInSetA))
+	return seqs.Concat(s.SetA.AsSeq(), seqs.Filter(s.SetB.AsSeq(), ComplementOf(s.SetA).Contains))
 }

@@ -51,6 +51,5 @@ type countableRelativeComplementSet[T any] struct {
 }
 
 func (s countableRelativeComplementSet[T]) AsSeq() seqs.Seq[T] {
-	notInSetA := func(v T) bool { return !s.SetA.Contains(v) }
-	return seqs.Filter(s.SetB.AsSeq(), notInSetA)
+	return seqs.Filter(s.SetB.AsSeq(), ComplementOf(s.SetA).Contains)
 }
