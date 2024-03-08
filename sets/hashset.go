@@ -1,7 +1,6 @@
 package sets
 
 import (
-	"github.com/siliconbrain/go-mapseqs/mapseqs"
 	"github.com/siliconbrain/go-seqs/seqs"
 )
 
@@ -15,54 +14,43 @@ func HashSetFromValues[T comparable](vs ...T) (res HashSet[T]) {
 	return
 }
 
-type HashSet[T comparable] map[T]struct{}
-
-func (s HashSet[T]) AsSeq() seqs.Seq[T] {
-	return mapseqs.KeysOf(s)
-}
-
-func (s HashSet[T]) Cardinality() int {
-	return len(s)
-}
-
-func (s HashSet[T]) Contains(v T) (res bool) {
-	_, res = s[v]
-	return
+type HashSet[T comparable] struct {
+	MapKeySet[map[T]struct{}, T, struct{}]
 }
 
 func (s *HashSet[T]) Exclude(vs ...T) {
-	if *s == nil {
+	if s.Map == nil {
 		return
 	}
 	for _, v := range vs {
-		delete(*s, v)
+		delete(s.Map, v)
 	}
 }
 
 func (s *HashSet[T]) ExcludeSeq(seq seqs.Seq[T]) {
-	if *s == nil {
+	if s.Map == nil {
 		return
 	}
 	seqs.ForEach(seq, func(v T) {
-		delete(*s, v)
+		delete(s.Map, v)
 	})
 }
 
 func (s *HashSet[T]) Include(vs ...T) {
-	if *s == nil {
-		*s = make(HashSet[T])
+	if s.Map == nil {
+		s.Map = make(map[T]struct{})
 	}
 	for _, v := range vs {
-		(*s)[v] = struct{}{}
+		s.Map[v] = struct{}{}
 	}
 }
 
 func (s *HashSet[T]) IncludeSeq(seq seqs.Seq[T]) {
-	if *s == nil {
-		*s = make(HashSet[T])
+	if s.Map == nil {
+		s.Map = make(map[T]struct{})
 	}
 	seqs.ForEach(seq, func(v T) {
-		(*s)[v] = struct{}{}
+		s.Map[v] = struct{}{}
 	})
 }
 
