@@ -9,9 +9,13 @@ func HashSetFromSeq[T comparable](seq seqs.Seq[T]) (res HashSet[T]) {
 	return
 }
 
-func HashSetFromValues[T comparable](vs ...T) (res HashSet[T]) {
+func HashSetFromSlice[T comparable](vs []T) (res HashSet[T]) {
 	res.Include(vs...)
 	return
+}
+
+func HashSetFromValues[T comparable](vs ...T) (res HashSet[T]) {
+	return HashSetFromSlice(vs)
 }
 
 type HashSet[T comparable] struct {
