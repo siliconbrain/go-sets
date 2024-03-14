@@ -22,6 +22,12 @@ type HashSet[T comparable] struct {
 	MapKeySet[map[T]struct{}, T, struct{}]
 }
 
+func (s HashSet[T]) Clone() HashSet[T] {
+	return HashSet[T]{
+		MapKeySet: s.MapKeySet.Clone(),
+	}
+}
+
 func (s *HashSet[T]) Exclude(vs ...T) {
 	if len(s.Map) == 0 {
 		return

@@ -1,6 +1,8 @@
 package sets
 
 import (
+	"maps"
+
 	"github.com/siliconbrain/go-mapseqs/mapseqs"
 	"github.com/siliconbrain/go-seqs/seqs"
 )
@@ -37,6 +39,13 @@ type KeyedSet[K comparable, V any] struct {
 
 func (s KeyedSet[K, V]) Cardinality() int {
 	return len(s.hashmap)
+}
+
+func (s KeyedSet[K, V]) Clone() KeyedSet[K, V] {
+	return KeyedSet[K, V]{
+		hashmap: maps.Clone(s.hashmap),
+		keyFn:   s.keyFn,
+	}
 }
 
 func (s KeyedSet[K, V]) Contains(v V) bool {

@@ -1,6 +1,8 @@
 package sets
 
 import (
+	"maps"
+
 	"github.com/siliconbrain/go-mapseqs/mapseqs"
 )
 
@@ -16,6 +18,10 @@ type MapKeySet[M ~map[K]V, K comparable, V any] struct {
 
 func (s MapKeySet[M, K, V]) Cardinality() int {
 	return len(s.Map)
+}
+
+func (s MapKeySet[M, K, V]) Clone() MapKeySet[M, K, V] {
+	return MapKeySetFrom(maps.Clone(s.Map))
 }
 
 func (s MapKeySet[M, K, V]) Contains(v K) bool {
