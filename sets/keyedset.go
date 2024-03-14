@@ -44,10 +44,6 @@ func (s KeyedSet[K, V]) Contains(v V) bool {
 	return res
 }
 
-func (s KeyedSet[K, V]) ForEachUntil(fn func(V) bool) {
-	mapseqs.ValuesOf(s.hashmap).ForEachUntil(fn)
-}
-
 func (s *KeyedSet[K, V]) Exclude(vs ...V) {
 	if len(s.hashmap) == 0 {
 		return
@@ -68,6 +64,15 @@ func (s *KeyedSet[K, V]) ExcludeSeq(seq seqs.Seq[V]) {
 		delete(s.hashmap, s.keyFn(v))
 		return len(s.hashmap) == 0
 	})
+}
+
+func (s KeyedSet[K, V]) ForEachUntil(fn func(V) bool) {
+	mapseqs.ValuesOf(s.hashmap).ForEachUntil(fn)
+}
+
+func (s KeyedSet[K, V]) GetByKey(key K) (V, bool) {
+	val, set := s.hashmap[key]
+	return val, set
 }
 
 func (s *KeyedSet[K, V]) Include(vs ...V) {
