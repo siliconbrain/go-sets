@@ -71,4 +71,5 @@ func (s *HashSet[T]) IncludeSeq(seq seqs.Seq[T]) {
 var _ interface {
 	CountableSetOf[any]
 	Modifiable[any]
+	seqs.FiniteSeq[any]
 } = (*HashSet[any])(nil)

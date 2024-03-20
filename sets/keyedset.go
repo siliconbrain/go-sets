@@ -100,6 +100,10 @@ func (s *KeyedSet[K, V]) IncludeSeq(seq seqs.Seq[V]) {
 	})
 }
 
+func (s KeyedSet[K, V]) Len() int {
+	return len(s.hashmap)
+}
+
 func (s *KeyedSet[K, V]) ensureHashmap() {
 	if s.hashmap == nil {
 		s.hashmap = make(map[K]V)
@@ -109,4 +113,5 @@ func (s *KeyedSet[K, V]) ensureHashmap() {
 var _ interface {
 	CountableSetOf[any]
 	Modifiable[any]
+	seqs.FiniteSeq[any]
 } = (*KeyedSet[any, any])(nil)
