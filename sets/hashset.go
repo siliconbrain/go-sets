@@ -29,24 +29,24 @@ func (s HashSet[T]) Clone() HashSet[T] {
 }
 
 func (s *HashSet[T]) Exclude(vs ...T) {
-	if len(s.Map) == 0 {
+	if s.Cardinality() == 0 {
 		return
 	}
 	for _, v := range vs {
 		delete(s.Map, v)
-		if len(s.Map) == 0 {
+		if s.Cardinality() == 0 {
 			return
 		}
 	}
 }
 
 func (s *HashSet[T]) ExcludeSeq(seq seqs.Seq[T]) {
-	if len(s.Map) == 0 {
+	if s.Cardinality() == 0 {
 		return
 	}
 	seq.ForEachUntil(func(v T) bool {
 		delete(s.Map, v)
-		return len(s.Map) == 0
+		return s.Cardinality() == 0
 	})
 }
 
