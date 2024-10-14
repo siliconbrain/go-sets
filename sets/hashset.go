@@ -50,6 +50,17 @@ func (s *HashSet[T]) ExcludeSeq(seq seqs.Seq[T]) {
 	})
 }
 
+func (s *HashSet[T]) ExcludeSet(set SetOf[T]) {
+	if s.Cardinality() == 0 {
+		return
+	}
+	for item := range s.Map {
+		if set.Contains(item) {
+			delete(s.Map, item)
+		}
+	}
+}
+
 func (s *HashSet[T]) Include(vs ...T) {
 	if s.Map == nil {
 		s.Map = make(map[T]struct{})
