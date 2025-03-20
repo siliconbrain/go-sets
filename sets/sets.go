@@ -45,6 +45,16 @@ func CardinalityOf[T any](s CountableSetOf[T]) int {
 	return seqs.Count(s)
 }
 
+// ContainsAllOf returns true if s contains all of the specified values
+func ContainsAllOf[T any](s SetOf[T], vs ...T) bool {
+	for _, v := range vs {
+		if !s.Contains(v) {
+			return false
+		}
+	}
+	return true
+}
+
 // ContainsAnyOf returns true if s contains any of the specified values
 func ContainsAnyOf[T any](s SetOf[T], vs ...T) bool {
 	for _, v := range vs {
