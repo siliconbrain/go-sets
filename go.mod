@@ -1,6 +1,6 @@
 module github.com/siliconbrain/go-sets
 
-go 1.21
+go 1.24
 
 require (
 	github.com/siliconbrain/go-mapseqs v0.2.0
