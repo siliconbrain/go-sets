@@ -3,8 +3,8 @@ package sets
 import "github.com/siliconbrain/go-seqs/seqs"
 
 // ComplementOf returns the complement of the specified set.
-func ComplementOf[T any](s SetOf[T]) SetOf[T] {
-	return complementSet[T]{
+func ComplementOf[Set SetOf[Item], Item any](s Set) SetOf[Item] {
+	return complementSet[Set, Item]{
 		Set: s,
 	}
 }
@@ -12,44 +12,44 @@ func ComplementOf[T any](s SetOf[T]) SetOf[T] {
 // RelativeComplementOf returns the relative complement of set A in set B.
 //
 // This is also known as the set difference of B and A, denoted B \ A or B - A.
-func RelativeComplementOf[T any](setA, setB SetOf[T]) SetOf[T] {
-	return relativeComplementSet[SetOf[T], T]{
+func RelativeComplementOf[SetA, SetB SetOf[Item], Item any](setA SetA, setB SetB) SetOf[Item] {
+	return relativeComplementSet[SetA, SetB, Item]{
 		SetA: setA,
 		SetB: setB,
 	}
 }
 
 // CountableRelativeComplementOf returns the countable relative complement of set A in set B.
-func CountableRelativeComplementOf[T any](setA, setB CountableSetOf[T]) CountableSetOf[T] {
-	return countableRelativeComplementSet[T]{
-		relativeComplementSet: relativeComplementSet[CountableSetOf[T], T]{
+func CountableRelativeComplementOf[SetA, SetB CountableSetOf[Item], Item any](setA SetA, setB SetB) CountableSetOf[Item] {
+	return countableRelativeComplementSet[SetA, SetB, Item]{
+		relativeComplementSet: relativeComplementSet[SetA, SetB, Item]{
 			SetA: setA,
 			SetB: setB,
 		},
 	}
 }
 
-type complementSet[T any] struct {
-	Set SetOf[T]
+type complementSet[Set SetOf[Item], Item any] struct {
+	Set Set
 }
 
-func (s complementSet[T]) Contains(v T) bool {
-	return !s.Set.Contains(v)
+func (s complementSet[_, Item]) Contains(item Item) bool {
+	return !s.Set.Contains(item)
 }
 
-type relativeComplementSet[S SetOf[T], T any] struct {
-	SetA S
-	SetB S
+type relativeComplementSet[SetA, SetB SetOf[Item], Item any] struct {
+	SetA SetA
+	SetB SetB
 }
 
-func (s relativeComplementSet[_, T]) Contains(v T) bool {
-	return s.SetB.Contains(v) && !s.SetA.Contains(v)
+func (s relativeComplementSet[_, _, Item]) Contains(item Item) bool {
+	return s.SetB.Contains(item) && !s.SetA.Contains(item)
 }
 
-type countableRelativeComplementSet[T any] struct {
-	relativeComplementSet[CountableSetOf[T], T]
+type countableRelativeComplementSet[SetA, SetB CountableSetOf[Item], Item any] struct {
+	relativeComplementSet[SetA, SetB, Item]
 }
 
-func (s countableRelativeComplementSet[T]) ForEachUntil(fn func(T) bool) {
+func (s countableRelativeComplementSet[_, _, Item]) ForEachUntil(fn func(Item) bool) {
 	seqs.Filter(s.SetB, ComplementOf(s.SetA).Contains).ForEachUntil(fn)
 }

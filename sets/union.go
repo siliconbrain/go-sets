@@ -3,41 +3,41 @@ package sets
 import "github.com/siliconbrain/go-seqs/seqs"
 
 // UnionOf returns the union of the two specified sets.
-func UnionOf[T any](setA, setB SetOf[T]) SetOf[T] {
-	cntSetA, okA := setA.(CountableSetOf[T])
-	cntSetB, okB := setB.(CountableSetOf[T])
+func UnionOf[SetA, SetB SetOf[Item], Item any](setA SetA, setB SetB) SetOf[Item] {
+	cntSetA, okA := any(setA).(CountableSetOf[Item])
+	cntSetB, okB := any(setB).(CountableSetOf[Item])
 	if okA && okB {
 		return CountableUnionOf(cntSetA, cntSetB)
 	}
-	return unionSet[SetOf[T], T]{
+	return unionSet[SetA, SetB, Item]{
 		SetA: setA,
 		SetB: setB,
 	}
 }
 
 // CountableUnionOf returns the union of the two specified countable sets.
-func CountableUnionOf[T any](setA, setB CountableSetOf[T]) CountableSetOf[T] {
-	return countableUnionSet[T]{
-		unionSet: unionSet[CountableSetOf[T], T]{
+func CountableUnionOf[SetA, SetB CountableSetOf[Item], Item any](setA SetA, setB SetB) CountableSetOf[Item] {
+	return countableUnionSet[SetA, SetB, Item]{
+		unionSet: unionSet[SetA, SetB, Item]{
 			SetA: setA,
 			SetB: setB,
 		},
 	}
 }
 
-type unionSet[S SetOf[T], T any] struct {
-	SetA S
-	SetB S
+type unionSet[SetA, SetB SetOf[Item], Item any] struct {
+	SetA SetA
+	SetB SetB
 }
 
-func (s unionSet[_, T]) Contains(v T) bool {
-	return s.SetA.Contains(v) || s.SetB.Contains(v)
+func (s unionSet[_, _, Item]) Contains(item Item) bool {
+	return s.SetA.Contains(item) || s.SetB.Contains(item)
 }
 
-type countableUnionSet[T any] struct {
-	unionSet[CountableSetOf[T], T]
+type countableUnionSet[SetA, SetB CountableSetOf[Item], Item any] struct {
+	unionSet[SetA, SetB, Item]
 }
 
-func (s countableUnionSet[T]) ForEachUntil(fn func(T) bool) {
+func (s countableUnionSet[_, _, Item]) ForEachUntil(fn func(Item) bool) {
 	seqs.Concat(s.SetA, seqs.Filter(s.SetB, ComplementOf(s.SetA).Contains)).ForEachUntil(fn)
 }

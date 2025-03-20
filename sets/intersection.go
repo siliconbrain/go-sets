@@ -3,43 +3,43 @@ package sets
 import "github.com/siliconbrain/go-seqs/seqs"
 
 // IntersectionOf returns the intersection of the two specified sets.
-func IntersectionOf[T any](setA, setB SetOf[T]) SetOf[T] {
-	cntSetA, okA := setA.(CountableSetOf[T])
-	cntSetB, okB := setB.(CountableSetOf[T])
+func IntersectionOf[SetA, SetB SetOf[Item], Item any](setA SetA, setB SetB) SetOf[Item] {
+	cntSetA, okA := any(setA).(CountableSetOf[Item])
+	cntSetB, okB := any(setB).(CountableSetOf[Item])
 	if okA && okB {
 		return CountableIntersectionOf(cntSetA, cntSetB)
 	}
-	return intersectionSet[SetOf[T], T]{
+	return intersectionSet[SetA, SetB, Item]{
 		SetA: setA,
 		SetB: setB,
 	}
 }
 
 // CountableIntersectionOf returns the intersection of the two specified countable sets.
-func CountableIntersectionOf[T any](setA, setB CountableSetOf[T]) CountableSetOf[T] {
-	return countableIntersectionSet[T]{
-		intersectionSet: intersectionSet[CountableSetOf[T], T]{
+func CountableIntersectionOf[SetA, SetB CountableSetOf[Item], Item any](setA SetA, setB SetB) CountableSetOf[Item] {
+	return countableIntersectionSet[SetA, SetB, Item]{
+		intersectionSet: intersectionSet[SetA, SetB, Item]{
 			SetA: setA,
 			SetB: setB,
 		},
 	}
 }
 
-type intersectionSet[S SetOf[T], T any] struct {
-	SetA S
-	SetB S
+type intersectionSet[SetA, SetB SetOf[Item], Item any] struct {
+	SetA SetA
+	SetB SetB
 }
 
-func (s intersectionSet[_, T]) Contains(v T) bool {
-	return s.SetA.Contains(v) && s.SetB.Contains(v)
+func (s intersectionSet[_, _, Item]) Contains(item Item) bool {
+	return s.SetA.Contains(item) && s.SetB.Contains(item)
 }
 
-type countableIntersectionSet[T any] struct {
-	intersectionSet[CountableSetOf[T], T]
+type countableIntersectionSet[SetA, SetB CountableSetOf[Item], Item any] struct {
+	intersectionSet[SetA, SetB, Item]
 }
 
-func (s countableIntersectionSet[T]) ForEachUntil(fn func(T) bool) {
-	smaller, larger := s.SetA, s.SetB
+func (s countableIntersectionSet[_, _, Item]) ForEachUntil(fn func(Item) bool) {
+	smaller, larger := CountableSetOf[Item](s.SetA), CountableSetOf[Item](s.SetB)
 
 	cardS, hasCardS := QuickCardinalityOf(smaller)
 	cardL, hasCardL := QuickCardinalityOf(larger)
