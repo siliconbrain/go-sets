@@ -59,6 +59,16 @@ func ContainsAnyOf[T any](s SetOf[T], vs ...T) bool {
 	return slices.ContainsFunc(vs, s.Contains)
 }
 
+func FromFunc[Item any](contains func(Item) bool) Func[Item] {
+	return contains
+}
+
+type Func[Item any] func(Item) bool
+
+func (fn Func[Item]) Contains(item Item) bool {
+	return fn(item)
+}
+
 // QuickCardinalityOf returns the cardinality of the set if it can be determined without counting its elements.
 func QuickCardinalityOf[T any](s CountableSetOf[T]) (int, bool) {
 	if s, ok := s.(interface{ Cardinality() int }); ok {
