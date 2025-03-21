@@ -1,6 +1,10 @@
 package sets
 
-import "github.com/siliconbrain/go-seqs/seqs"
+import (
+	"slices"
+
+	"github.com/siliconbrain/go-seqs/seqs"
+)
 
 // SetOf defines the minimal interface of a set of T.
 type SetOf[T any] interface {
@@ -47,22 +51,12 @@ func CardinalityOf[T any](s CountableSetOf[T]) int {
 
 // ContainsAllOf returns true if s contains all of the specified values
 func ContainsAllOf[T any](s SetOf[T], vs ...T) bool {
-	for _, v := range vs {
-		if !s.Contains(v) {
-			return false
-		}
-	}
-	return true
+	return !slices.ContainsFunc(vs, ComplementOf(s).Contains)
 }
 
 // ContainsAnyOf returns true if s contains any of the specified values
 func ContainsAnyOf[T any](s SetOf[T], vs ...T) bool {
-	for _, v := range vs {
-		if s.Contains(v) {
-			return true
-		}
-	}
-	return false
+	return slices.ContainsFunc(vs, s.Contains)
 }
 
 // QuickCardinalityOf returns the cardinality of the set if it can be determined without counting its elements.
