@@ -66,3 +66,17 @@ func ContainsAnyOfIter[Obj any](set SetOf[Obj], seq iter.Seq[Obj]) bool {
 	}
 	return false
 }
+
+// IsEmpty returns (true, true) when the set is empty, (false, true) when the set is not empty, and (false, false) when it is unknown.
+func IsEmpty[Obj any](set SetOf[Obj]) (empty bool, known bool) {
+	if fin, ok := set.(interface{ Len() int }); ok {
+		return fin.Len() == 0, true
+	}
+	if card, ok := QuickCardinalityOf(set); ok {
+		return card == 0, true
+	}
+	if seq, ok := set.(seqs.Seq[Obj]); ok {
+		return seqs.IsEmpty(seq), true
+	}
+	return false, false
+}
