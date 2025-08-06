@@ -12,17 +12,17 @@ func TestArraySet_Contains(t *testing.T) {
 		value int
 		want  bool
 	}{
-		"empty set": {
+		"should return false for any object when set is empty": {
 			items: []int{},
 			value: 42,
 			want:  false,
 		},
-		"internal": {
+		"should return true when object is part of the set": {
 			items: []int{1, 2, 3, 4},
 			value: 2,
 			want:  true,
 		},
-		"external": {
+		"should return false when object is not part of the set": {
 			items: []int{1, 2, 3, 4},
 			value: 0,
 			want:  false,
@@ -39,7 +39,6 @@ func TestArraySet_Contains(t *testing.T) {
 		},
 	}
 	for name, testCase := range testCases {
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			set := FromSlice(testCase.items)
 			assert.Equal(t, testCase.want, set.Contains(testCase.value))

@@ -3,43 +3,43 @@ package sets
 import "github.com/siliconbrain/go-seqs/seqs"
 
 // IntersectionOf returns the intersection of the two specified sets.
-func IntersectionOf[SetA, SetB SetOf[Item], Item any](setA SetA, setB SetB) SetOf[Item] {
-	cntSetA, okA := any(setA).(CountableSetOf[Item])
-	cntSetB, okB := any(setB).(CountableSetOf[Item])
+func IntersectionOf[SetA, SetB SetOf[Obj], Obj any](setA SetA, setB SetB) SetOf[Obj] {
+	cntSetA, okA := any(setA).(CountableSetOf[Obj])
+	cntSetB, okB := any(setB).(CountableSetOf[Obj])
 	if okA && okB {
 		return CountableIntersectionOf(cntSetA, cntSetB)
 	}
-	return intersectionSet[SetA, SetB, Item]{
+	return intersectionSet[SetA, SetB, Obj]{
 		SetA: setA,
 		SetB: setB,
 	}
 }
 
 // CountableIntersectionOf returns the intersection of the two specified countable sets.
-func CountableIntersectionOf[SetA, SetB CountableSetOf[Item], Item any](setA SetA, setB SetB) CountableSetOf[Item] {
-	return countableIntersectionSet[SetA, SetB, Item]{
-		intersectionSet: intersectionSet[SetA, SetB, Item]{
+func CountableIntersectionOf[SetA, SetB CountableSetOf[Obj], Obj any](setA SetA, setB SetB) CountableSetOf[Obj] {
+	return countableIntersectionSet[SetA, SetB, Obj]{
+		intersectionSet: intersectionSet[SetA, SetB, Obj]{
 			SetA: setA,
 			SetB: setB,
 		},
 	}
 }
 
-type intersectionSet[SetA, SetB SetOf[Item], Item any] struct {
+type intersectionSet[SetA, SetB SetOf[Obj], Obj any] struct {
 	SetA SetA
 	SetB SetB
 }
 
-func (s intersectionSet[_, _, Item]) Contains(item Item) bool {
-	return s.SetA.Contains(item) && s.SetB.Contains(item)
+func (s intersectionSet[_, _, Obj]) Contains(obj Obj) bool {
+	return s.SetA.Contains(obj) && s.SetB.Contains(obj)
 }
 
-type countableIntersectionSet[SetA, SetB CountableSetOf[Item], Item any] struct {
-	intersectionSet[SetA, SetB, Item]
+type countableIntersectionSet[SetA, SetB CountableSetOf[Obj], Obj any] struct {
+	intersectionSet[SetA, SetB, Obj]
 }
 
-func (s countableIntersectionSet[_, _, Item]) ForEachUntil(fn func(Item) bool) {
-	smaller, larger := CountableSetOf[Item](s.SetA), CountableSetOf[Item](s.SetB)
+func (s countableIntersectionSet[_, _, Obj]) ForEachUntil(yield func(Obj) bool) {
+	smaller, larger := CountableSetOf[Obj](s.SetA), CountableSetOf[Obj](s.SetB)
 
 	cardS, hasCardS := QuickCardinalityOf(smaller)
 	cardL, hasCardL := QuickCardinalityOf(larger)
@@ -48,5 +48,9 @@ func (s countableIntersectionSet[_, _, Item]) ForEachUntil(fn func(Item) bool) {
 		smaller, larger = larger, smaller
 	}
 
-	seqs.Filter(smaller, larger.Contains).ForEachUntil(fn)
+	seqs.Filter(smaller, larger.Contains).ForEachUntil(yield)
+}
+
+func (s countableIntersectionSet[_, _, Obj]) Values(yield func(Obj) bool) {
+	seqs.ToIter(s)(yield)
 }
